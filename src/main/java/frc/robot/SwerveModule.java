@@ -21,11 +21,12 @@ public class SwerveModule {
     drive = new WPI_TalonFX(driveID);
     steer = new WPI_TalonFX(steerID);
 
-    drive.setInverted(isInvertedDrive);
-    drive.setInverted(isInvertedSteer);
-
     drive.configFactoryDefault();
     steer.configFactoryDefault();
+
+    drive.setInverted(false);
+    steer.setInverted(true);
+    canCoder.configSensorDirection(false);
 
     drive.config_kP(0, 0.065); //0.07
     drive.config_kI(0, 0.0001);

@@ -33,8 +33,8 @@ public class SwerveSystem extends SubsystemBase {
 
     modulesArray = new SwerveModule[4];
                                                                           
-    frontLeft = new SwerveModule(0, 40, 1, 305, true, false);
-    frontRight = new SwerveModule(22, 8, 15, 47, false, false);
+    frontLeft = new SwerveModule(0, 40, 1, 125, true, false);
+    frontRight = new SwerveModule(22, 8, 15, 45, false, false);
     backLeft = new SwerveModule(61, 60, 51, 261, true, false);
     backRight = new SwerveModule(20, 30, 5, 75, false, false);
                     

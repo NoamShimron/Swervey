@@ -38,7 +38,7 @@ public class Drive extends CommandBase {
     SmartDashboard.putNumber("Drive y" , y);
     SmartDashboard.putNumber("Drive rot" , rot);
 
-    swerveSystem.drive(-y * 4.4196 * modifier, x * 4.4196 * modifier, rot * 4.4196 / 0.035); // * 180
+    swerveSystem.drive(-y * 4.4196 * modifier, -x * 4.4196 * modifier, rot * 4.4196 / 0.035); // * 180
 
     // swerveSystem.drive(-y * 4.4196, x * 4.4196, rot * 4.4196 / 0.035); // * 180
 

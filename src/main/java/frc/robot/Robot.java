@@ -18,19 +18,15 @@ import frc.robot.subsystems.SwerveSystem;
 
 public class Robot extends TimedRobot {
 
-  TalonFX steer;
   SwerveSystem swerveSystem;
   PS4Controller controller;
-  SwerveModule swerveModule;
 
   @Override
   public void robotInit() {
-    steer = new TalonFX(21);
     controller = new PS4Controller(0);
     swerveSystem = new SwerveSystem();
+    swerveSystem.setDefaultCommand(new Drive(swerveSystem, controller));
     // swerveSystem.setDefaultCommand(new Move(swerveSystem, controller));
-                                                                              //302
-    swerveModule = new SwerveModule(0, 40, 1, 42, true, false);
   }
 
   @Override
@@ -51,9 +47,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {
-    swerveSystem.setDefaultCommand(new Drive(swerveSystem, controller));
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
@@ -67,10 +61,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-    swerveSystem.getData();
-    swerveModule.move(controller.getLeftY(), controller.getLeftX());
-  }
+  public void testPeriodic() {}
 }
 /*
  * meow
