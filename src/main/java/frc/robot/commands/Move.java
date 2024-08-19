@@ -5,10 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.PS4Controller;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSystem;
 
-public class Move extends CommandBase {
+public class Move extends Command {
 
   SwerveSystem swerveSystem;
   PS4Controller controller;

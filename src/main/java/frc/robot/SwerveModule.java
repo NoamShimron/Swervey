@@ -1,54 +1,89 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.SwerveModule;
 
 public class SwerveModule {
     
-    WPI_CANCoder canCoder;
-    WPI_TalonFX drive;
-    WPI_TalonFX steer;  
+  CANcoder canCoder;
+  TalonFX drive;
+  TalonFX steer;
+  Slot0Configs driveConfigs = new Slot0Configs();
+  Slot0Configs steerConfigs = new Slot0Configs();
+  // Create TalonFXConfiguration objects for drive and steer
+TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+TalonFXConfiguration steerConfig = new TalonFXConfiguration();
   
   public SwerveModule(int canCoderID, int driveID, int steerID, double offset, boolean isInvertedDrive, boolean isInvertedSteer) {
-    canCoder = new WPI_CANCoder(canCoderID);
-    drive = new WPI_TalonFX(driveID);
-    steer = new WPI_TalonFX(steerID);
+    canCoder = new CANcoder(canCoderID);
+    drive = new TalonFX(driveID);
+    steer = new TalonFX(steerID);
+    Slot0Configs driveConfigs = new Slot0Configs();
+    Slot0Configs steerConfigs = new Slot0Configs();
+    
 
-    drive.configFactoryDefault();
-    steer.configFactoryDefault();
+    drive.getConfigurator().apply(new TalonFXConfiguration());
+    steer.getConfigurator().apply(new TalonFXConfiguration());
 
     drive.setInverted(false);
     steer.setInverted(true);
-    canCoder.configSensorDirection(false);
 
-    drive.config_kP(0, 0.065); //0.07
-    drive.config_kI(0, 0.0001);
-    drive.config_kD(0, 2);
-    drive.config_kF(0, 0.047);
-    drive.config_IntegralZone(0, 300);
-    steer.config_kP(0, 0.2);
-    steer.config_kI(0, 0.00003);
-    steer.config_kD(0, 2);
-    steer.config_kF(0, 0);
+  
+    CANcoderConfiguration  configs = new CANcoderConfiguration();
+    configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    canCoder.getConfigurator().apply(configs);
+    // drive.config_kP(0, 0.065); //0.07
+    // drive.Slot0Configs.config_kP()
+    // drive.config_kI(0, 0.0001);
+    // drive.config_kD(0, 2);
+    // drive.config_kF(0, 0.047);
+    // drive.config_IntegralZone(0, 300);
+    // steer.config_kP(0, 0.2);
+    // steer.config_kI(0, 0.00003);
+    // steer.config_kD(0, 2);
+    // steer.config_kF(0, 0);
 
-    drive.configNominalOutputForward(0);
-    drive.configNominalOutputReverse(0);
-    steer.configNominalOutputForward(0);
-    steer.configNominalOutputReverse(0);
+    driveConfigs.kP = 0.065; 
+    driveConfigs.kI = 0.00001; 
+    driveConfigs.kD = 2;
+    driveConfigs.kS = 0.047;
 
-    drive.configPeakOutputForward(1);
-    drive.configPeakOutputReverse(-1);
-    steer.configPeakOutputForward(1);
-    steer.configPeakOutputReverse(-1);
+    steerConfigs.kP = 4000;
+    steerConfigs.kI = 7;
+    steerConfigs.kD = 55;
+    steerConfigs.kS = 999;
+    driveConfig.Slot0= driveConfigs;
+    steerConfig.Slot0= steerConfigs;
 
-    drive.setSelectedSensorPosition(0);
+    // drive.setSelectedSensorPosition(0);
+    drive.setPosition(0);
     //steer.setSelectedSensorPosition(0);
     // steer.setSelectedSensorPosition(canCoder.getAbsolutePosition() / 360 * Constants.TALONFX_CPR);
     steer.setSelectedSensorPosition((canCoder.getAbsolutePosition() - offset) / 360 * Constants.TALONFX_CPR / Constants.DRIVE_STEER_GEAR_RATIO);
