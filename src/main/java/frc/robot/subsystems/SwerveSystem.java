@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -33,10 +34,10 @@ public class SwerveSystem extends SubsystemBase {
 
     modulesArray = new SwerveModule[4];
                                                                           
-    frontLeft = new SwerveModule(0, 40, 1, 125, true, false);
-    frontRight = new SwerveModule(22, 8, 15, 45, false, false);
-    backLeft = new SwerveModule(61, 60, 51, 261, true, false);
-    backRight = new SwerveModule(20, 30, 5, 75, false, false);
+    frontLeft = new SwerveModule(0, 40, 1, 125, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    frontRight = new SwerveModule(22, 8, 15, 45, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+    backLeft = new SwerveModule(61, 60, 51, 261, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    backRight = new SwerveModule(20, 30, 5, 75, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
                     
     
     modulesArray[0] = frontLeft;

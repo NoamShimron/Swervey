@@ -3,8 +3,12 @@ package frc.robot;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -31,34 +35,42 @@ import frc.robot.Constants;
 import frc.robot.SwerveModule;
 
 public class SwerveModule {
-    
+
   CANcoder canCoder;
   TalonFX drive;
   TalonFX steer;
-  Slot0Configs driveConfigs = new Slot0Configs();
-  Slot0Configs steerConfigs = new Slot0Configs();
-  // Create TalonFXConfiguration objects for drive and steer
-TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-TalonFXConfiguration steerConfig = new TalonFXConfiguration();
-  
-  public SwerveModule(int canCoderID, int driveID, int steerID, double offset, boolean isInvertedDrive, boolean isInvertedSteer) {
+  // Slot0Configs driveConfigs = new Slot0Configs(); should be initialized inside
+  // constructor
+  // Slot0Configs steerConfigs = new Slot0Configs(); should be initialized inside
+  // constructor
+  // // Create TalonFXConfiguration objects for drive and steer
+  // TalonFXConfiguration driveConfig = new TalonFXConfiguration(); should be
+  // initialized inside constructor
+  // TalonFXConfiguration steerConfig = new TalonFXConfiguration(); should be
+  // initialized inside constructor
+
+  public SwerveModule(int canCoderID, int driveID, int steerID, double offset, InvertedValue driveDirection,
+      InvertedValue steerDirection) {
     canCoder = new CANcoder(canCoderID);
     drive = new TalonFX(driveID);
     steer = new TalonFX(steerID);
-    Slot0Configs driveConfigs = new Slot0Configs();
-    Slot0Configs steerConfigs = new Slot0Configs();
-    
 
-    drive.getConfigurator().apply(new TalonFXConfiguration());
-    steer.getConfigurator().apply(new TalonFXConfiguration());
 
-    drive.setInverted(false);
-    steer.setInverted(true);
+    CANcoderConfiguration CanCoderConfig = new CANcoderConfiguration();
+    CanCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive; // this might be backwards
+    CanCoderConfig.MagnetSensor.MagnetOffset = offset; // might need to be negative
+    canCoder.getConfigurator().apply(CanCoderConfig);
+
+    TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+    TalonFXConfiguration steerConfig = new TalonFXConfiguration();
+
+    Slot0Configs driveSlot0 = driveConfig.Slot0;
+    Slot0Configs steerSlot0 = steerConfig.Slot0;
+
+    driveConfig.MotorOutput.Inverted = driveDirection;
+    steerConfig.MotorOutput.Inverted = steerDirection;
 
   
-    CANcoderConfiguration  configs = new CANcoderConfiguration();
-    configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    canCoder.getConfigurator().apply(configs);
     // drive.config_kP(0, 0.065); //0.07
     // drive.Slot0Configs.config_kP()
     // drive.config_kI(0, 0.0001);
@@ -70,65 +82,72 @@ TalonFXConfiguration steerConfig = new TalonFXConfiguration();
     // steer.config_kD(0, 2);
     // steer.config_kF(0, 0);
 
-    driveConfigs.kP = 0.065; 
-    driveConfigs.kI = 0.00001; 
-    driveConfigs.kD = 2;
-    driveConfigs.kS = 0.047;
+    driveSlot0.kP = 0.065;
+    driveSlot0.kI = 0.00001;
+    driveSlot0.kD = 2;
+    driveSlot0.kS = 0.047;
 
-    steerConfigs.kP = 4000;
-    steerConfigs.kI = 7;
-    steerConfigs.kD = 55;
-    steerConfigs.kS = 999;
-    driveConfig.Slot0= driveConfigs;
-    steerConfig.Slot0= steerConfigs;
+    steerSlot0.kP = 4000;
+    steerSlot0.kI = 7;
+    steerSlot0.kD = 55;
+    steerSlot0.kS = 999;
+
+
+    drive.getConfigurator().apply(driveConfig);
+    steer.getConfigurator().apply(steerConfig);
 
     // drive.setSelectedSensorPosition(0);
     drive.setPosition(0);
-    //steer.setSelectedSensorPosition(0);
-    // steer.setSelectedSensorPosition(canCoder.getAbsolutePosition() / 360 * Constants.TALONFX_CPR);
-    steer.setSelectedSensorPosition((canCoder.getAbsolutePosition() - offset) / 360 * Constants.TALONFX_CPR / Constants.DRIVE_STEER_GEAR_RATIO);
+    // steer.setSelectedSensorPosition(0);
+    // steer.setSelectedSensorPosition(canCoder.getAbsolutePosition() / 360 *
+    // Constants.TALONFX_CPR);
+    steer.setPosition(canCoder.getAbsolutePosition().getValue()  / 360  / Constants.DRIVE_STEER_GEAR_RATIO);
+    // steer.setSelectedSensorPosition(
+    //     (canCoder.getAbsolutePosition() - offset) / 360 * Constants.TALONFX_CPR / Constants.DRIVE_STEER_GEAR_RATIO);
   }
 
-  public void stop(){
+  public void stop() {
     drive.stopMotor();
     steer.stopMotor();
   }
 
-  public void move(double drive, double rotation){
-    this.drive.set(ControlMode.PercentOutput, drive);
-    steer.set(ControlMode.PercentOutput, rotation);
+  public void move(double driveDutyCycle, double steerDutyCycle) {
+    // this.drive.set(ControlMode.PercentOutput, drive);
+    this.drive.setControl(new DutyCycleOut(driveDutyCycle));
+    this.steer.setControl(new DutyCycleOut(steerDutyCycle));
   }
 
-  public double getHeadingDegrees(){
-    return steer.getSelectedSensorPosition() / Constants.TALONFX_CPR * Constants.DRIVE_STEER_GEAR_RATIO * 360;
+  public double getHeadingDegrees() {
+    return steer.getPosition().getValue() *  Constants.DRIVE_STEER_GEAR_RATIO * 360;
   }
 
-  public double steerSensoerPos(){
-    return steer.getSelectedSensorPosition();
+  public double steerSensoerPos() {
+    return steer.getPosition().getValue();
   }
 
-  public double getVelocityRPM(){
-    // return drive.getSelectedSensorVelocity() / Constants.DRIVE_GEAR_RATIO * 2 * Math.PI * Constants.DRIVE_WHEEL_RADIUS / 60;
-    return drive.getSelectedSensorVelocity() * 600 / Constants.TALONFX_CPR * Constants.DRIVE_GEAR_RATIO;
+  public double getVelocityRPM() {
+    // return drive.getSelectedSensorVelocity() / Constants.DRIVE_GEAR_RATIO * 2 *
+    // Math.PI * Constants.DRIVE_WHEEL_RADIUS / 60;
+    return drive.getVelocity().getValue() * 600 * Constants.DRIVE_GEAR_RATIO;
   }
 
-  public void setDesiredState(SwerveModuleState desiredState){
-    SwerveModuleState optimizedDesiredState = optimize(desiredState, new Rotation2d(Math.toRadians(getHeadingDegrees())));
-    double desiredSpeed = (optimizedDesiredState.speedMetersPerSecond * 60 / (2 * Math.PI * Constants.DRIVE_WHEEL_RADIUS)) / Constants.DRIVE_GEAR_RATIO * (Constants.TALONFX_CPR / 600.0);
-    double desiredPosition = optimizedDesiredState.angle.getDegrees() / (360.0 / (Constants.TALONFX_CPR / Constants.DRIVE_STEER_GEAR_RATIO));
-    SmartDashboard.putNumber("state speed"+hashCode(), desiredSpeed);
-    SmartDashboard.putNumber("state pos"+hashCode(), desiredPosition);
+  public void setDesiredState(SwerveModuleState desiredState) {
+    SwerveModuleState optimizedDesiredState = optimize(desiredState,new Rotation2d(Math.toRadians(getHeadingDegrees())));
+    double desiredSpeed = (optimizedDesiredState.speedMetersPerSecond * 60 / (2 * Math.PI * Constants.DRIVE_WHEEL_RADIUS)) / Constants.DRIVE_GEAR_RATIO;
+    double desiredPosition = optimizedDesiredState.angle.getDegrees() / 360.0 / Constants.DRIVE_STEER_GEAR_RATIO;
+    SmartDashboard.putNumber("state speed" + hashCode(), desiredSpeed);
+    SmartDashboard.putNumber("state pos" + hashCode(), desiredPosition);
     if (desiredSpeed == 0) {
-      drive.set(ControlMode.PercentOutput, 0);
-      steer.set(ControlMode.PercentOutput, 0);
+      drive.setControl(new DutyCycleOut(0));
+      steer.setControl(new DutyCycleOut(0));
     } else {
-      drive.set(ControlMode.Velocity, desiredSpeed);
-      steer.set(ControlMode.Position, desiredPosition);
+      drive.setControl(new VelocityDutyCycle(desiredSpeed));
+      steer.setControl(new PositionDutyCycle(desiredPosition));
     }
   }
 
-  public double getAbsEncoder(){
-    return canCoder.getAbsolutePosition();
+  public double getAbsEncoder() {
+    return canCoder.getAbsolutePosition().getValue();
   }
 
   private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
@@ -158,8 +177,7 @@ TalonFXConfiguration steerConfig = new TalonFXConfiguration();
 
   public static SwerveModuleState optimize(
       SwerveModuleState desiredState, Rotation2d currentAngle) {
-    double targetAngle =
-        placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
+    double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
     double targetSpeed = desiredState.speedMetersPerSecond;
     double delta = targetAngle - currentAngle.getDegrees();
     if (Math.abs(delta) > 90) {
