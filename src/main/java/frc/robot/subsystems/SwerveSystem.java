@@ -34,10 +34,14 @@ public class SwerveSystem extends SubsystemBase {
 
     modulesArray = new SwerveModule[4];
                                                                           
-    frontLeft = new SwerveModule(0, 40, 1, 125, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
-    frontRight = new SwerveModule(22, 8, 15, 45, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
-    backLeft = new SwerveModule(61, 60, 51, 261, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
-    backRight = new SwerveModule(20, 30, 5, 75, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+    // frontLeft = new SwerveModule(Constants.FL_CAN_ID, Constants.FL_DR_ID, Constants.FL_STR_ID, 0.0, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    // frontRight = new SwerveModule(Constants.FR_CAN_ID, Constants.FR_DR_ID, Constants.FR_STR_ID, 0.0, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+    // backLeft = new SwerveModule(Constants.BL_CAN_ID, Constants.BL_DR_ID, Constants.BL_STR_ID, 0.0, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    // backRight = new SwerveModule(Constants.BR_CAN_ID, Constants.BR_DR_ID, Constants.BR_STR_ID, 0.0, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+    frontLeft = new SwerveModule(Constants.FL_CAN_ID, Constants.FL_DR_ID, Constants.FL_STR_ID, -0.097, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    frontRight = new SwerveModule(Constants.FR_CAN_ID, Constants.FR_DR_ID, Constants.FR_STR_ID, -0.381, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+    backLeft = new SwerveModule(Constants.BL_CAN_ID, Constants.BL_DR_ID, Constants.BL_STR_ID, -0.476, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    backRight = new SwerveModule(Constants.BR_CAN_ID, Constants.BR_DR_ID, Constants.BR_STR_ID, -0.451, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
                     
     
     modulesArray[0] = frontLeft;

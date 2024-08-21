@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -57,7 +58,7 @@ public class SwerveModule {
 
 
     CANcoderConfiguration CanCoderConfig = new CANcoderConfiguration();
-    CanCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive; // this might be backwards
+    CanCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive; // this might be backwards
     CanCoderConfig.MagnetSensor.MagnetOffset = offset; // might need to be negative
     canCoder.getConfigurator().apply(CanCoderConfig);
 
@@ -68,8 +69,10 @@ public class SwerveModule {
     Slot0Configs steerSlot0 = steerConfig.Slot0;
 
     driveConfig.MotorOutput.Inverted = driveDirection;
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     steerConfig.MotorOutput.Inverted = steerDirection;
-
+    steerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    
   
     // drive.config_kP(0, 0.065); //0.07
     // drive.Slot0Configs.config_kP()
@@ -82,15 +85,15 @@ public class SwerveModule {
     // steer.config_kD(0, 2);
     // steer.config_kF(0, 0);
 
-    driveSlot0.kP = 0.065;
-    driveSlot0.kI = 0.00001;
-    driveSlot0.kD = 2;
-    driveSlot0.kS = 0.047;
+    driveSlot0.kP = 0.008;
+    driveSlot0.kI = 0;
+    driveSlot0.kD = 0.002;
+    driveSlot0.kS = 0;
 
-    steerSlot0.kP = 4000;
-    steerSlot0.kI = 7;
-    steerSlot0.kD = 55;
-    steerSlot0.kS = 999;
+    steerSlot0.kP = 1.6;
+    steerSlot0.kI = 0;
+    steerSlot0.kD = 0.026;
+    steerSlot0.kS = 0;
 
 
     drive.getConfigurator().apply(driveConfig);
@@ -101,7 +104,7 @@ public class SwerveModule {
     // steer.setSelectedSensorPosition(0);
     // steer.setSelectedSensorPosition(canCoder.getAbsolutePosition() / 360 *
     // Constants.TALONFX_CPR);
-    steer.setPosition(canCoder.getAbsolutePosition().getValue()  / 360  / Constants.DRIVE_STEER_GEAR_RATIO);
+    steer.setPosition(canCoder.getAbsolutePosition().getValue()   / Constants.DRIVE_STEER_GEAR_RATIO);
     // steer.setSelectedSensorPosition(
     //     (canCoder.getAbsolutePosition() - offset) / 360 * Constants.TALONFX_CPR / Constants.DRIVE_STEER_GEAR_RATIO);
   }

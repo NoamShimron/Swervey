@@ -21,5 +21,18 @@ public final class Constants {
     public static final double TALONFX_CPR = 2048.0;
     public static final double CANCODER_RESOLUTION = 360.0 / 4096.0;
 
+    public static final int FL_STR_ID = 1;
+    public static final int FL_DR_ID = 2;
+    public static final int FL_CAN_ID = 3;
+    public static final int FR_STR_ID = 4;
+    public static final int FR_DR_ID = 5;
+    public static final int FR_CAN_ID = 6;
+    public static final int BL_STR_ID = 7;
+    public static final int BL_DR_ID = 8;
+    public static final int BL_CAN_ID = 9;
+    public static final int BR_STR_ID = 10;
+    public static final int BR_DR_ID = 11;
+    public static final int BR_CAN_ID = 12;
+
 
 }
