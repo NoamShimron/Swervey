@@ -190,10 +190,16 @@ public class SwerveModule {
     return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
   }
 
+  // public double getDistanceMeters() {
+  //   return Constants.DRIVE_WHEEL_RADIUS * 2 * Math.PI * (drive.getSelectedSensorPosition() / Constants.TALONFX_CPR) / Constants.DRIVE_DRIVE_GEAR_RATIO;
+  // }
   public double getDistanceMeters() {
-    return Constants.DRIVE_WHEEL_RADIUS * 2 * Math.PI * (drive.getSelectedSensorPosition() / Constants.TALONFX_CPR) / Constants.DRIVE_DRIVE_GEAR_RATIO;
-  }
+    // Retrieve the position signal from the TalonFX using Phoenix 6 API
+    double sensorPosition = drive.getPosition().getValue();
 
+    // Calculate the distance in meters
+    return Constants.DRIVE_WHEEL_RADIUS * 2 * Math.PI * (sensorPosition / Constants.TALONFX_CPR) / Constants.DRIVE_DRIVE_GEAR_RATIO;
+}
   
   public double getDistanceTraveled() {
     // Retrieve the position signal from the TalonFX
