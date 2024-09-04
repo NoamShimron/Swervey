@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +29,6 @@ import java.lang.AutoCloseable;
 
 public class SwerveSystem extends SubsystemBase {
   
-
   
   SwerveModule frontLeft;
   SwerveModule frontRight;
@@ -36,6 +36,8 @@ public class SwerveSystem extends SubsystemBase {
   SwerveModule backRight;
 
   SwerveModule[] modulesArray;
+
+  public SwerveDriveOdometry odometry;
 
   SwerveDriveKinematics kinematics;
 
@@ -105,6 +107,19 @@ public class SwerveSystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, 4.4196);
     setDesiredStates(states);
   }
+
+  public SwerveModulePosition[] getmuModulePositions(){
+    SwerveModulePosition[] positions= new SwerveModulePosition[modulesArray.length];
+    for (int i = 0; i < modulesArray.length; i++) {
+      positions[i] = modulesArray[i].getModulePosition();
+    }
+    return positions;
+  }
+
+  public void resetPose(Pose2d pose) {
+    odometry.resetPosition(navX.getRotation2d(), getModulePositions(), pose);
+  }
+
 
   public Rotation2d getRotation2d() {
     return navX.getRotation2d();
