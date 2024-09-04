@@ -14,6 +14,7 @@ package frc.robot;
  */
 public final class Constants {
     public static final double DRIVE_GEAR_RATIO = 1.0 / 8.14;
+    public static final double DRIVE_DRIVE_GEAR_RATIO = 7.0 / 150.0;
     public static final double DRIVE_STEER_GEAR_RATIO = 7.0 / 150.0;
     public static final double DRIVE_WHEEL_RADIUS = 0.0508;
     public static final double DRIVE_OFFSET = 0.3675;
