@@ -7,17 +7,28 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SwerveModule;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.Sendable;
+import java.lang.AutoCloseable;
+
+
 
 public class SwerveSystem extends SubsystemBase {
+  
+
   
   SwerveModule frontLeft;
   SwerveModule frontRight;
@@ -28,7 +39,13 @@ public class SwerveSystem extends SubsystemBase {
 
   SwerveDriveKinematics kinematics;
 
+
   AHRS navX;
+
+
+  
+
+
 
   public SwerveSystem() {
 
@@ -57,6 +74,11 @@ public class SwerveSystem extends SubsystemBase {
       );
 
     navX = new AHRS(SPI.Port.kMXP);
+    
+    
+    
+
+
   }
 
   public void stop(){
@@ -76,12 +98,38 @@ public class SwerveSystem extends SubsystemBase {
       modulesArray[i].setDesiredState(states[i]);
     }
   }
+  
 
   public void drive(double speedY, double speedX, double rotation){
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, Math.toRadians(rotation)));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, 4.4196);
     setDesiredStates(states);
   }
+
+  public Rotation2d getRotation2d() {
+    return navX.getRotation2d();
+  }
+
+  
+
+  public void driveWithNavX(double speedY, double speedX, double rotation) {
+    double yaw = (navX.getYaw()); // get current robot rotation.
+    double yawRad = Math.toRadians(yaw); // code excepts radians
+
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromRobotRelativeSpeeds(speedY, speedX, rotation, new Rotation2d(yawRad)));
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, 4.4196);
+
+    setDesiredStates(states);
+  }
+
+
+
+
+
+
+
+
 
   public void getData(){
     SmartDashboard.putNumber("front left heading", modulesArray[0].getHeadingDegrees());
@@ -105,7 +153,11 @@ public class SwerveSystem extends SubsystemBase {
     SmartDashboard.putNumber("back right steer velocity RPM", modulesArray[3].getVelocityRPM());
 
     SmartDashboard.putNumber("navX pitch", navX.getPitch());
+
+    
   }
+
+
 
   @Override
   public void periodic() {
@@ -131,4 +183,15 @@ public class SwerveSystem extends SubsystemBase {
 
     SmartDashboard.putNumber("navX pitch", navX.getPitch());
   }
+
+
+
+
+
+
+  
+  
+
+  
+
 }
