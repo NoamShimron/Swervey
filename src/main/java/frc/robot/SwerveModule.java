@@ -196,8 +196,14 @@ public class SwerveModule {
 
   
   public double getDistanceTraveled() {
-    return (drive.getSelectedSensorPosition() / Constants.TALONFX_CPR * Constants.DRIVE_DRIVE_GEAR_RATIO * 2 * Constants.DRIVE_WHEEL_RADIUS * Math.PI);
-  }
+    // Retrieve the position signal from the TalonFX
+    double sensorPosition = drive.getPosition().getValue();
+
+    // Perform the distance calculation
+    return (sensorPosition / Constants.TALONFX_CPR * Constants.DRIVE_DRIVE_GEAR_RATIO * 2 * Constants.DRIVE_WHEEL_RADIUS * Math.PI);
+}
+
+  
   public SwerveModulePosition getModulePosition() {
     SwerveModulePosition pos = new SwerveModulePosition(getDistanceTraveled(),new Rotation2d(getHeadingRad()));
     return pos;
