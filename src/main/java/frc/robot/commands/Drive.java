@@ -24,7 +24,7 @@ public class Drive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    modifier = 0.4;
+    modifier = 0.5;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -44,11 +44,6 @@ public class SwerveSystem extends SubsystemBase {
 
   AHRS navX;
 
-
-  
-
-
-
   public SwerveSystem() {
 
     modulesArray = new SwerveModule[4];
@@ -59,7 +54,8 @@ public class SwerveSystem extends SubsystemBase {
     // backRight = new SwerveModule(Constants.BR_CAN_ID, Constants.BR_DR_ID, Constants.BR_STR_ID, 0.0, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
     frontLeft = new SwerveModule(Constants.FL_CAN_ID, Constants.FL_DR_ID, Constants.FL_STR_ID, -0.097, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
     frontRight = new SwerveModule(Constants.FR_CAN_ID, Constants.FR_DR_ID, Constants.FR_STR_ID, -0.381, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
-    backLeft = new SwerveModule(Constants.BL_CAN_ID, Constants.BL_DR_ID, Constants.BL_STR_ID, -0.476, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
+    // backLeft = new SwerveModule(Constants.BL_CAN_ID, Constants.BL_DR_ID, Constants.BL_STR_ID, -0.476, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
+     backLeft = new SwerveModule(Constants.BL_CAN_ID, Constants.BL_DR_ID, Constants.BL_STR_ID, -0.476, InvertedValue.CounterClockwise_Positive, InvertedValue.Clockwise_Positive);
     backRight = new SwerveModule(Constants.BR_CAN_ID, Constants.BR_DR_ID, Constants.BR_STR_ID, -0.451, InvertedValue.Clockwise_Positive, InvertedValue.Clockwise_Positive);
                     
     
@@ -103,6 +99,8 @@ public class SwerveSystem extends SubsystemBase {
   
 
   public void drive(double speedY, double speedX, double rotation){
+    SmartDashboard.putNumber("SpeedX",speedX);
+    SmartDashboard.putNumber("SpeedY",speedY);
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(speedY, speedX, Math.toRadians(rotation)));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, 4.4196);
     setDesiredStates(states);
@@ -115,7 +113,14 @@ public class SwerveSystem extends SubsystemBase {
     }
     return positions;
   }
-
+  public SwerveModulePosition[] getModulePositions() {
+    // returns an array of the current position of each module
+    SwerveModulePosition[] positions = new SwerveModulePosition[modulesArray.length];
+    for (int i = 0; i < modulesArray.length; i++) {
+      positions[i] = modulesArray[i].getModulePosition();
+    }
+    return positions;
+  }
   public void resetPose(Pose2d pose) {
     odometry.resetPosition(navX.getRotation2d(), getModulePositions(), pose);
   }
@@ -168,7 +173,7 @@ public class SwerveSystem extends SubsystemBase {
     SmartDashboard.putNumber("back right steer velocity RPM", modulesArray[3].getVelocityRPM());
 
     SmartDashboard.putNumber("navX pitch", navX.getPitch());
-
+    SmartDashboard.putNumber("navX yaw", navX.getYaw());
     
   }
 
@@ -196,7 +201,9 @@ public class SwerveSystem extends SubsystemBase {
     SmartDashboard.putNumber("back left steer velocity RPM", modulesArray[2].getVelocityRPM());
     SmartDashboard.putNumber("back right steer velocity RPM", modulesArray[3].getVelocityRPM());
 
-    SmartDashboard.putNumber("navX pitch", navX.getPitch());
+    SmartDashboard.putNumber("navX pitch", navX.getYaw());
+
+
   }
 
 

@@ -20,7 +20,7 @@ public class DriveWithNavX extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    modifier = 0.5;
+    modifier = 0.2;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

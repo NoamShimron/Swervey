@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
+import frc.robot.commands.DriveWithNavX;
 import frc.robot.commands.Move;
 import frc.robot.subsystems.SwerveSystem;
 
@@ -25,7 +26,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     controller = new PS4Controller(0);
     swerveSystem = new SwerveSystem();
-    swerveSystem.setDefaultCommand(new Drive(swerveSystem, controller));
+    swerveSystem.setDefaultCommand(new DriveWithNavX(swerveSystem, controller));
     // swerveSystem.setDefaultCommand(new Move(swerveSystem, controller));
   }
 

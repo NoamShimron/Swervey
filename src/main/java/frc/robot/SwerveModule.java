@@ -191,10 +191,11 @@ public class SwerveModule {
   }
 
   public double getDistanceMeters() {
-    return Constants.DRIVE_WHEEL_RADIUS * 2 * Math.PI * (drive.getSelectedSensorPosition() / Constants.TALONFX_CPR) / Constants.DRIVE_DRIVE_GEAR_RATIO;
+    double sensorPosition = drive.getPosition().getValue();
+    return Constants.DRIVE_WHEEL_RADIUS*2*Math.PI*(sensorPosition/Constants.TALONFX_CPR)/Constants.DRIVE_DRIVE_GEAR_RATIO;
   }
 
-
+  
   public double getDistanceTraveled() {
     // Retrieve the position signal from the TalonFX
     double sensorPosition = drive.getPosition().getValue();
@@ -208,6 +209,10 @@ public class SwerveModule {
     SwerveModulePosition pos = new SwerveModulePosition(getDistanceTraveled(),new Rotation2d(getHeadingRad()));
     return pos;
   }
-  
+  public double getHeadingRad() {
+        double sensorPosition = drive.getPosition().getValue();
+
+    return Math.toRadians(sensorPosition / Constants.TALONFX_CPR * Constants.DRIVE_STEER_GEAR_RATIO * 360) % 360;
+  }
   
 }
